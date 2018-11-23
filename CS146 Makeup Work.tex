@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[left=3cm, right=3cm, top=0cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{hyperref}
+\setlength\parindent{0pt}
+\hypersetup{
+    colorlinks,
+    citecolor=green,
+    filecolor=black,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\begin{document}
+\title{CS146 10.1 Make-up work }
+\author{Jacob Puthipiroj}
+\date{}
+\maketitle
+
+\section{Pre-Class Work}
+\subsection{Task 1}
+Use the sum­product algorithm to compute the marginal distributions over $x_0, x_1, v_0$, and $v_1$. There is a partial solution below to get you started. Calculate all remaining messages. Remember to use the equation for the product of two normal pdfs from the study guide.
+\begin{align*}
+M_1({x_0}) &= N(x_0 | y_0, \sigma_y^2) \\
+M_2({x_0}) &= N(x_0 | \mu_0, \sigma_{x_0}^2) \\
+M_3(x_0) &= N(x_0 | y_0, \sigma_y^2)N(x_0 | \mu_x, \sigma_{x_0}^2)\\
+M_4(x_1) &= N(x_1, y_1, \sigma_y^2) \\
+M_5(x_1) &= N(x_1|y_1, \sigma_y^2) \\
+M_6(v_0) &= \int_{x_0} \int_{x_1} N(x_0 | y_0, \sigma_y^2) N(x_0 | \mu_x. \sigma_x^2) N(x_1, y_1, \sigma_y^2), N(x_1|x_0 + v_0,\sigma_x^2)\\
+&= \int_{x_0}\int_{x_1}N(y_0 | \mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2)N(x_0|\mu_3, \sigma_3^2) N(x_1|y_1, \sigma_y^2), N(x_1| x_0+v_0, \sigma^2)\\
+&= N(y_0|\mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2) \int_{x_0} N(x_0 | \mu_3, \sigma_3^2) \int_{x_1} N(x_1 | \mu_4, \sigma_4^2) N(y_1|x_0 + v_0, \sigma_x^2 + \sigma_y^2)\\
+&= N(y_0| \mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2) \int_{x_0}N(x_0|\mu_3, \sigma_3^2)N(y_1|x_0 + v_0, \sigma_x^2 + \sigma_y^2)\\
+&= N(y_0 | \mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2) \int_{x_0}N(x_0|\mu_{3}, \sigma_3^2) N(x_0|y_1-v_0, \sigma_x^2 + \sigma_y^2)\\
+&= N(v_0 | y_1-\mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2)N(y_0|\mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2)\\
+M_7(v_0) &= N(v_0|\mu_{v_0}, \sigma_{v_0}^2)\\
+M_8(v_0) &= N(v_0 | y_1 - \mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2) N(y_0|\mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2)N(v_0|\mu_{v_0}, \sigma_{v_0}^2)\\
+M_9(v_1) &= N(y_0|\mu_{x_0}, \sigma_{x_0}^2+\sigma_y^2) \int){v_0} N(v_0|y_1 -\mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2) N(v_0 | \mu_{v_0}, \sigma_{v_0}^2)N(v_0|v_1, \sigma_v^2)\\
+&= N(y_0, \mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2) \int_{v_0} N(v_0 | y_1 - \mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2)N(v_0 | \mu_5, \sigma_5^2) N(v_1 | \mu_{v_0}, \sigma_v^2 + \sigma_{v_0}^2) \\
+&= N(y_0, \mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2)N(v_1 | \mu_{v_0}, \sigma_v^2 + \sigma_{v_0}^2) \int_{v_0} N(v_0 | y_1 - \mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2)N(v_0 | \mu_5, \sigma_5^2)\\
+&= N(y_0, \mu_{x_0}, \sigma_{x_0}^2 + \sigma_{y}^2)N(v_1 | \mu_{v_0}, \sigma_v^2 + \sigma_{v_0}^2)N(y_1 - \mu_3 | \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)
+\end{align*}
+\newgeometry{}
+\newpage
+\subsection{Task 2}
+As soon as we add one more time step, $t  = 0$, we create a cycle in the graph - and the more time steps we add, the more cycles we create. Note however that all messages are still normal pdfs.\\
+
+Now we have a situation where, if we knew all incoming messages to a factor or variable node, wecan calculate outgoing messages by multiplying and integrating normal pdfs. But we can't alwaysget all incoming messages since there is a cycle in the graph.\\
+We break the cycle problem by initializing all messages to 1 (corresponding to a normal pdf with $\sigma^2= \infty$). With initial values, we can update any message on the graph, since all other incoming messages will be available at any node. The good news is that you have already done all the work to figure out how to update any message!\\
+\begin{itemize}
+\item Each message from a variable node to a factor node is just a product of normal distributions(from the incoming messages).
+\item Each message from a factor node to a variable node is just a product of normal distributions with other variables integrated out. All the integrals are over normal distributions.
+\end{itemize}
+We then update every message (in both directions along each edge) on the graph exactly once.This constitutes one iteration of the loopy message passing algorithm. We repeat this as manytimes as needed to converge. We will explore the convergence of the algorithm in class.
+\begin{align*}
+M_1(x_0) &= N(x_0 | y_0, \sigma_y^2)\\
+M_2(x_0) &= N(x_0 |\mu_x, \sigma_{x_0}^2)\\
+M_3(x_0) &= N(x_0 | y_0, \sigma_y^2) N(x_0| \mu_x, \sigma_{x_0}^2)\\
+M_4(x_1) &= N(x_1 | y_1, \sigma_y^2)\\
+M_5(x_1) &= N(x_1 | y_1, \sigma_y^2)\\
+M_6(v_0) &= N(v_0 | y_1 - \mu_3, \sigma_x^2 + \sigma_y^2 + \sigma_3^2)*N(y_0|\mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2)\\
+M_7(v_0) &= N(v_0|\mu_{v_0}, \sigma_{v_0}^2)\\
+M_8(v_1) &= N(v_0|y_1 - \mu_3, \sigma_x^2 + \sigma_y^2 +\sigma_3^2) N(y_0| \mu_{x_0}, \sigma_v^2 + \sigma_{v_0}^2) N(y_1 - \mu_3 | \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)\\
+M_9(v_1) &= N(y_0 | \mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2) N(v_1 | \mu_{v_0} + \sigma_v^2 + \sigma_{v_0}^2) N(y_1 - \mu_3 | \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)\\
+M_{11}(x_2) &= M_12(x_2) = N(x_2 | y_2, \sigma_y^2)\\
+M_{13}(v_1)&= \int_{x_@} \int_{x_1} N(x_2 | y_2, \sigma_y^2) N(x_2 | x_1 ++ v_1, \sigma_x^2)\\
+&= \int_{x_@} \int_{x_1} N(x_2 | \mu_6, \sigma_6^2) N(y_2 | x_1 + v_1, \sigma_x^2 + \sigma_y^2)\\
+&= \int_{x_1}N(y_2 | x_1 + v_1, \sigma_x^2 + \sigma_y^2) = \int_{x_1}N(x_1 | y_2 - v_1, \sigma_x^2 + \sigma_y^2) = 1\\
+M_{14}(v_1) &= M_9(v_1) = N(y_0 | \mu_{x_0}, \sigma)_{x_0}^2 + \sigma_{y}^2) N(v_1| \mu_{v_0}, \sigma_v^2 + \sigma_{v_0}^2) N(y_1 - \mu_3 | \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)\\
+M_{15}(v_2)&=N(y_0 + \mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2)N(y_1 -\mu_3|\mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)\int_{v_1} N(v_1 | \mu_{v_0}, \sigma_v^2 + \sigma_{v_0}^2) N(v_1 | v_2, \sigma_v^2)\\
+&= N(y_0|\mu_{x_0}, \sigma_{x_0}^2 + \sigma_y^2) N(y_1 - \mu_3 | \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_y^2 + \sigma_3^2)N(v_2|\mu_{v_0}, 2\sigma_v^2 + \sigma_{v_0}^2)
+\end{align*}
+For the second iteration, $m_5$ has to be updated in the other direction towards $x_1$. This is done by updating $m_9, m_8. m_6$ in the other direction to get $m_5$
+\begin{align*}
+M_{15}(v_2) &= 1\\
+M_{14}(v_!) &= \int{v_2}N(v_2|v_1, \sigma_v^2) = 1\\
+M_9(v_1) &=M_{13}M_{14} =1\\
+M_8(v_0) &= \int_{v_1}N(v_1|v_0, \sigma_v^2) = 1\\
+M_6(v_0) &= M_8 M_7 = N(v_0 | \mu_{v_0}, \sigma_{v_0}^2)	\\
+M_5(x_1) &= \int_{x_0}\int_{v_0} M_6 M_3 N(x_1|x_0 + v_0, \sigma_x^2)\\
+&= \int_{x_0}\int_{v_0}N(v_0 + \mu_{v_0}, \sigma_{v_0}^2) N(x_0|y_0, \sigma_y^2)N(x_0|\mu_x, \sigma_{x_0}^2)N(x_1|x_0 + v_0,\sigma_x^2)\\
+&= \int_{x_0}N(x_0 | y_0, \sigma_y^2)N(x_0|\mu_x, \sigma_{x_0}^2)\int_{v_0}N(v_0 | \mu_{v_0}, \sigma_{v_0}^2) N(x_1 | x_0 + v_0, \sigma_x^2)\\
+&= \int_{x_0}N(x_0|y_0, \sigma_y^2)N(x_0|\mu_x, \sigma_{x_0}^2)\int_{v_0}N(v_0|\mu_{v_0}, \sigma_{v_0}^2)N(v_0|x_1 - x_0, \sigma_x^2)\\
+&= \int_{x_0}N(x_0|y_0, \sigma_y^2)N(x_0|\mu_x, \sigma_{x_0}^2)N(x_1 - x_0| \mu_{v_0}, \sigma_x^2 + \sigma_{v_0}^2)\\
+&= N(y_0|\mu_x, \sigma_y^2 + \sigma_{x_0}^2) \int_{x_0}N(x_0 | \mu_5, \sigma_5^2)N(x_1 - x_0 | \mu_{v_0}, \sigma_x^2 + \sigma_{v_0}^2)\\
+&= N(y_0 | \mu_x, \sigma_y^2 + \sigma_{x_0}^2) \int_{x_0} N(x_0 | \mu_5, \sigma_5^2) N(x_0 | x_1 - \mu_{v_0}, \sigma_x^2 + \sigma_{v_0}^2)\\
+&= N(y_0 | \mu_x, \sigma_y^2 + \sigma_{x_0}^2 ) N(x_1 - \mu_{v_0}| \mu_5, \sigma_5^2 + \sigma_x^2 + \sigma_{v_0}^2)
+\end{align*}
+
+
+
+\end{document}
